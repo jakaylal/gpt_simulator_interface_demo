@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenAI Interface</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f2f3f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 { margin-top: 20px; color: #333; }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+      align-self: flex-end;
+    }
+    button:hover { background-color: #0056b3; }
+    #drop-area {
+      border: 2px dashed #007bff;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      color: #555;
+      cursor: pointer;
+    }
+    #drop-area.dragover { background-color: #eaf4ff; border-color: #0056b3; }
+    #file-input { display: none; }
+    .chat-box {
+      white-space: pre-line;
+      background: white;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 700px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .user { color: #007bff; font-weight: bold; }
+    .assistant { color: #28a745; font-weight: bold; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+
+<h1>OpenAI Web Assistant</h1>
+
+<form action="/" method="POST" enctype="multipart/form-data">
+  <label for="prompt">Your message:</label>
+  <textarea id="prompt" name="prompt" placeholder="Ask something..."></textarea>
+
+  <div id="drop-area">
+    <p>Drag & Drop a file here</p>
+    <input type="file" id="file-input" name="userFile" />
+    <div id="file-info"></div>
+  </div>
+
+  <button type="submit">Send</button>
+</form>
+
+<% if (error) { %>
+  <p class="error"><%= error %></p>
+<% } %>
+
+<div class="chat-box">
+  <% if (chatHistory && chatHistory.length > 0) { %>
+    <% chatHistory.forEach((msg) => { %>
+      <p><span class="<%= msg.role %>"><%= msg.role %>:</span> <%= msg.text %></p>
+    <% }) %>
+  <% } else { %>
+    <p><em>No messages yet. Start chatting!</em></p>
+  <% } %>
+</div>
+
+<form action="/clear" method="POST" style="margin-top: 15px;">
+  <button type="submit">Clear Chat</button>
+</form>
+
+<script>
+  const dropArea = document.getElementById("drop-area");
+  const fileInput = document.getElementById("file-input");
+  const fileInfo = document.getElementById("file-info");
+
+  dropArea.addEventListener("click", () => fileInput.click());
+
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.classList.add("dragover");
+  });
+
+  dropArea.addEventListener("dragleave", () => dropArea.classList.remove("dragover"));
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.classList.remove("dragover");
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files;
+      fileInfo.textContent = "Selected file: " + files[0].name;
+    }
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      fileInfo.textContent = "Selected file: " + fileInput.files[0].name;
+    }
+  });
+</script>
+
+</body>
+</html>
