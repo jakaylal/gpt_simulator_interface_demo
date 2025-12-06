@@ -1,0 +1,31 @@
+{
+  "id": "pmpt_buhi_master",
+  "messages": [
+    {
+      "role": "system",
+      "content": [
+        {
+          "type": "text",
+          "text": "{instructions}"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "{user_message}"
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "instructions": {
+      "type": "string"
+    },
+    "user_message": {
+      "type": "string"
+    }
+  }
+}
